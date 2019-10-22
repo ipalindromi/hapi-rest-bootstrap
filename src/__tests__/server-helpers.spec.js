@@ -3,13 +3,12 @@ const path = require('path');
 
 jest.mock('fs');
 
-const { findMethods, findRoutes } = require('../server-helpers');
+const { findMethods, findPlugins, findRoutes } = require('../server-helpers');
 
-beforeEach(() => {
-	jest.resetModules();
-});
+beforeEach(() => {});
 
 describe('findMethods', () => {
+	jest.resetModules();
 	beforeEach(() => {
 		fs.statSync.mockReturnValue({
 			isDirectory: () => false,
@@ -51,7 +50,25 @@ describe('findMethods', () => {
 			{ virtual: true },
 		);
 
-		const routes = findMethods();
-		expect(routes).toStrictEqual([['testFunc', testFunc]]);
+		const methods = findMethods();
+		expect(methods).toStrictEqual([['testFunc', testFunc]]);
+	});
+
+	test('It will findPlugins in the file system', () => {
+		// These are used to find routes
+		fs.readdirSync.mockReturnValue(['example.js']);
+
+		const testFunc = () => 'test';
+
+		jest.doMock(
+			path.join(__dirname, '..', '/plugins/example.js'),
+			() => ({
+				testFunc,
+			}),
+			{ virtual: true },
+		);
+
+		const plugins = findPlugins();
+		expect(plugins).toStrictEqual([testFunc]);
 	});
 });
