@@ -8,7 +8,6 @@ const { findMethods, findPlugins, findRoutes } = require('../server-helpers');
 beforeEach(() => {});
 
 describe('findMethods', () => {
-	jest.resetModules();
 	beforeEach(() => {
 		fs.statSync.mockReturnValue({
 			isDirectory: () => false,
